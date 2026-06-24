@@ -25,7 +25,7 @@ async def read_index(request: Request):
     data = QueryDatabase.get_data_simulations('SIM789')
     chart_data = tools.generate_chart(data)
 
-    return templates.TemplateResponse("index.html", {"request": request, "chart_data": chart_data})
+    return templates.TemplateResponse(request=request, name="index.html", context={"chart_data": chart_data})
 
 
 # api to get all data simulations
@@ -96,7 +96,7 @@ async def get_data_simulation(id_simulation: str , request : Request):
         # when the machine is running , we get latest data    
         data = QueryDatabase.get_data_simulations_realtime(id_simulation)  
         if not data or len(data) == 0:
-            return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+            return templates.TemplateResponse(request=request, name="404.html", status_code=404)
 
         data = data[0]
         if data[7] == 'running':
@@ -105,13 +105,13 @@ async def get_data_simulation(id_simulation: str , request : Request):
             # When the state is no longer 'running', we get the full simulation data   
             data = QueryDatabase.get_data_simulations(id_simulation)
             if not data or len(data) == 0:
-                 return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+                 return templates.TemplateResponse(request=request, name="404.html", status_code=404)
 
             return JSONResponse(content=(data), status_code=200)
 
     except Exception as e:
         print(e)
-        return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
+        return templates.TemplateResponse(request=request, name="500.html", status_code=500)
 
 
 #function to manage the request and return with a status
@@ -121,10 +121,10 @@ async def handle_request(query_func, request: Request):
         if data:
             return JSONResponse(content=jsonable_encoder(data), status_code=200)
         else:
-            return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+            return templates.TemplateResponse(request=request, name="404.html", status_code=404)
     except Exception as e:
         print(e)
-        return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
+        return templates.TemplateResponse(request=request, name="500.html", status_code=500)
 
 
 
